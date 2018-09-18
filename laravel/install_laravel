@@ -1,0 +1,62 @@
+# Check needed packages 
+$ docker --version
+$ docker-compose --version
+$ docker-machine --version
+
+# Make directory for laradock
+$ mkdir /path
+$ cd /path
+
+# Run shell
+$ install_laravel.sh
+
+# Add user
+$ adduser user_name
+
+#  Install laravel 
+$ composer create-project laravel/laravel ProjectName "5.6.*”
+
+# Exit from docker
+$ exit
+
+# Stop laradock_workspace_1 
+$ docker-compose stop
+
+# Edit document root in docker-compose.yml
+$ vim docker-compose.yml
+
+     ### Nginx Server Container ##################################
+     nginx:
+       build:
+         context: ./nginx
+         args:
+           - PHP_UPSTREAM=php-fpm
+       volumes_from:
+         - applications
+       volumes:
+         - ${NGINX_HOST_LOG_PATH}:/var/log/nginx
+         - ${NGINX_SITES_PATH}:/etc/nginx/sites-available
+       ports:
+         ## Before
+         #- "${NGINX_HOST_HTTP_PORT}:80"
+         ## After
+         - "8080:80"
+         ## Before
+         #- "${NGINX_HOST_HTTPS_PORT}:443"
+         ## After
+         - "443:443"
+
+# Edit document root for Nginx
+$ vim nginx/sites/default.conf
+     ## Before
+     # root /var/www/public;
+     ## After
+     root /var/www/ProjectName/public;
+
+# Run docker-compose up 
+$ docker-compose up -d php-fpm nginx mysql
+
+# Access
+localhost:8080/
+
+
